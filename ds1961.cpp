@@ -70,7 +70,8 @@ static bool WriteScratchPad(OneWire *ow, const uint8_t id[8], uint16_t addr, con
   Serial.print("buf: ");
   hexdump(buf, len);
   ow->read_bytes(crc, 2);
-  //hexdump(crc, 2);
+  Serial.print("crc: ");
+  hexdump(crc, 2);
 
   return ow->check_crc16(buf, len, crc);
 }

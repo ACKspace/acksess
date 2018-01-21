@@ -29,7 +29,7 @@ void loop() {
       if (!getKeyCode(ds, user.uid)) break; // Check if there is a valid ibutton available and read it
       Serial.println("A");
       //hexdump(user.uid, 10);
-      if(!getUser(db, user)) {Serial.println("B"); state = STATE_DENIED; break;} // Check if user exists in the database and fetch the secret
+      //if(!getUser(db, user)) {Serial.println("B"); state = STATE_DENIED; break;} // Check if user exists in the database and fetch the secret
       
       Serial.print("uid: ");
       hexdump(user.uid, 6);
