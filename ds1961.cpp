@@ -5,8 +5,6 @@
 #include "OneWire.h"
 #include "ds1961.h"
 
-#include "acksess.h"
-
 // commands used in the DS1961
 #define CMD_WRITE_SCRATCHPAD     0x0F
 #define CMD_COMPUTE_NEXT_SECRET  0x33
@@ -67,12 +65,8 @@ static bool WriteScratchPad(OneWire *ow, const uint8_t id[8], uint16_t addr, con
   memcpy(buf + len, data, 8);
   len += 8;
   ow->write_bytes(buf, len);
-  Serial.print("buf: ");
-  hexdump(buf, len);
   ow->read_bytes(crc, 2);
-  Serial.print("crc: ");
-  hexdump(crc, 2);
-
+  
   return ow->check_crc16(buf, len, crc);
 }
 
@@ -251,19 +245,15 @@ bool DS1961::ReadAuthWithChallenge(const uint8_t id[8], uint16_t addr, const uin
 
   // put the challenge in the scratchpad
   memset(scratchpad, 0, sizeof(scratchpad));
-  Serial.print("scratchpad: ");
-  hexdump(scratchpad, 8);
   memcpy(scratchpad + 4, challenge, 3);
-  Serial.print("scratchpad: ");
-  hexdump(scratchpad, 8);
   if (!WriteScratchPad(ow, id, addr, scratchpad)) {
-        Serial.println("WriteScratchPad failed!");
+//    Serial.println("WriteScratchPad failed!");
     return false;
   }
 
   // perform the authenticated read
   if (!ReadAuthPage(ow, id, addr, data, mac)) {
-        Serial.println("ReadAuthPage failed!");
+//    Serial.println("ReadAuthPage failed!");
     return false;
   }
 
@@ -306,31 +296,31 @@ bool DS1961::WriteData(const uint8_t id[8], int addr, const uint8_t data[8], con
   
   // write data into scratchpad
   if (!WriteScratchPad(ow, id, addr, data)) {
-    Serial.println("WriteScratchPad failed!");
+//    Serial.println("WriteScratchPad failed!");
     return false;
   }
   
   // read scratch pad for auth code
   if (!ReadScratchPad(ow, id, &ad, &es, spad)) {
-    Serial.println("ReadScratchPad failed!");
+//    Serial.println("ReadScratchPad failed!");
     return false;
   }
   
   // copy scratchpad to EEPROM
   if (!CopyScratchPad(ow, id, ad, es, mac)) {
-    Serial.println("CopyScratchPad failed!");
+//    Serial.println("CopyScratchPad failed!");
     return false;
   }
   
   // refresh scratchpad
   if (!RefreshScratchPad(ow, id, addr, data)) {
-    Serial.println("RefreshScratchPad failed!");
+//    Serial.println("RefreshScratchPad failed!");
     return false;
   }
   
   // re-write with load first secret
   if (!LoadFirstSecret(ow, id, addr, es)) {
-    Serial.println("LoadFirstSecret failed!");
+//    Serial.println("LoadFirstSecret failed!");
     return false;
   }
   
