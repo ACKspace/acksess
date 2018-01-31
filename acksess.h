@@ -8,7 +8,7 @@
 
 struct User {
   byte uid[6];        //6 bytes of id
-  byte secret[3];     //3 bytes secret
+  byte secret[8];     //8 bytes secret
   uint8_t flags;      // 1xxxxxxx = Is aduld
                       // x1xxxxxx = Is admin
 };

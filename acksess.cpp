@@ -22,24 +22,12 @@ bool getKeyCode(OneWire ds, byte addr[8]){
   return true;
 }
 
-bool ibutton_challenge(byte page, byte* challenge, uint8_t data[32], uint8_t mac[20], DS1961 sha) {
-  if (! sha.ReadAuthWithChallenge(NULL, page * 32, challenge, data, mac)) {
-    return false;
-  }
-  Serial.print("<");
-  hexdump(data, 32);
-  Serial.print(" ");
-  hexdump(mac, 20);
-  Serial.println(">");  
-  return true;
-}
-
 bool getUser(DB db, User &user) {
   User dbUser;
   for(int i = 1; i <= db.nRecs(); i++) {
     db.read(i, DB_REC dbUser);
     if(compare(dbUser.uid, user.uid, 6)) {
-      memcpy(user.secret, dbUser.secret, 3);
+      memcpy(user.secret, dbUser.secret, 8);
       user.flags = dbUser.flags;
       return true;
     }
