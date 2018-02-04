@@ -16,6 +16,7 @@ unsigned char page = {0x00};
 byte challenge[3] = {0x09, 0x0A, 0x0B};
 uint8_t data[32], mac[20], macCalculated[20];
 uint8_t addr[8];
+int userIndex;
 
 void setup() {
   Serial.begin(115200);       //init serial
@@ -29,7 +30,8 @@ void loop() {
     case STATE_VERIFY:
       if (!getKeyCode(ds, addr)) break; // Check if there is a valid ibutton available and read it
       memcpy(user.uid, addr, 6);
-      if(!getUser(db, user)) {state = STATE_DENIED; break;} // Check if user exists in the database and fetch the secret
+      userIndex = getUser(db, user);
+      if(userIndex < 0) {state = STATE_DENIED; break;} // Check if user exists in the database and fetch the secret
 
       Serial.print("addr: ");
       hexdump(addr, 8);
@@ -39,13 +41,22 @@ void loop() {
       hexdump(user.secret, 8);
       Serial.print("flags: ");
       hexdump(user.flags, 1);
+
+      if(user.secret[0] == 0x00){
+        Serial.println("Updating secret!");
+        // TODO: Generate secret
+        uint8_t secret[8] = {0x56, 0x56, 0x96, 0x56, 0x56, 0x55, 0x76, 0x92};
+        memcpy(user.secret, secret, 8);
+        sha.WriteSecret(addr, user.secret);
+        updateUser(db, user, userIndex);
+      }
+
       
-      sha.WriteSecret(addr, user.secret);
       // TODO: Generate challenge
       if (!sha.ReadAuthWithChallenge(addr, page * 32, challenge, data, mac)) break; // Send the challenge to the ibutton
       calcmac_readauthpage(macCalculated, page * 32, data, user.secret, challenge, addr); // Calculate what the secret should be
       if(!compare(mac, macCalculated, 20)) {state = STATE_DENIED; break;} // Check is the two MACs match
-      if(!(user.flags&0b01000000)) {state = STATE_CHILD; break;} // Check if the user is a adult
+      if(!(user.flags&0b10000000)) {state = STATE_CHILD; break;} // Check if the user is a adult
       if(user.flags&0b01000000) {state = STATE_ADMIN; break;} // Check if the user is a admin
       state = STATE_GRANTED; // The user passed all checks so should be granted access
       break;

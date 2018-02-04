@@ -22,17 +22,21 @@ bool getKeyCode(OneWire ds, byte addr[8]){
   return true;
 }
 
-bool getUser(DB db, User &user) {
+int getUser(DB db, User &user) {
   User dbUser;
   for(int i = 1; i <= db.nRecs(); i++) {
     db.read(i, DB_REC dbUser);
     if(compare(dbUser.uid, user.uid, 6)) {
       memcpy(user.secret, dbUser.secret, 8);
       user.flags = dbUser.flags;
-      return true;
+      return i;
     }
   }
-  return false;
+  return -1;
+}
+
+bool updateUser(DB db, User &user, int index) {
+  db.write(index, DB_REC user);
 }
 
 void hexdump(byte* string, int size) {

@@ -22,7 +22,8 @@ struct User {
 struct user;
 bool getKeyCode(OneWire ds, byte addr[8]);
 bool ibutton_challenge(byte page, byte* challenge, uint8_t data[32], uint8_t mac[20], DS1961 sha);
-bool getUser(DB db, User &user);
+int getUser(DB db, User &user);
+bool updateUser(DB db, User &user, int index);
 bool compare( const uint8_t one[], const uint8_t two[], const uint8_t length );
 void hexdump(byte* string, int size);
 
