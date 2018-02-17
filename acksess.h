@@ -26,5 +26,6 @@ int getUser(DB db, User &user);
 bool updateUser(DB db, User &user, int index);
 bool compare( const uint8_t one[], const uint8_t two[], const uint8_t length );
 void hexdump(byte* string, int size);
+void admin(DB db);
 
 #endif

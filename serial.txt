@@ -1,0 +1,15 @@
+/* Commands:
+  * List all users
+  * Add user
+  * Remove user
+  * Set flags
+  * Clear secret
+*/
+
+'A': Admin mode entered
+
+'a': List all users
+'b': Add user
+'c': Remove user
+'d': Set flags
+'e': Clear secret

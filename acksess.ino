@@ -10,7 +10,7 @@ DS1961  sha(&ds);
 DB db;
 
 User user;
-uint8_t state;
+uint8_t state = STATE_ADMIN;
 
 unsigned char page = {0x00};
 byte challenge[3] = {0x09, 0x0A, 0x0B};
@@ -76,8 +76,10 @@ void loop() {
       state = STATE_VERIFY;
       break;
     case STATE_ADMIN:
-      Serial.println("STATE_ADMIN");
-      delay(1000);
+      //Serial.println("STATE_ADMIN");
+      //delay(1000);
+      admin(db);
+      
       state = STATE_VERIFY;
       break;
   }
