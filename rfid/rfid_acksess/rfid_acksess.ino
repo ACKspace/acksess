@@ -55,8 +55,7 @@ void loop() {
       Serial.print("flags: ");
       hexdump(user.flags, 1);
 
-      //sector = random(0, 16);
-      sector = 1;
+      sector = random(0, 16);
       memcpy(shaData, user.secret, 8);
       shaData[8] = sector;
       Sha1.init();
