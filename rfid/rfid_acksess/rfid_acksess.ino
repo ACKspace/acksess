@@ -16,7 +16,7 @@ PN532 nfc(pn532_i2c);
 
 unsigned char page = {0x00};
 byte challenge[3] = {0x09, 0x0A, 0x0B};
-uint8_t data[32], mac[20], macCalculated[20], addr[4], keyA[6], sector, *hash, shaData[6];
+uint8_t data[32], mac[20], macCalculated[20], addr[4], keyA[6], sector, *hash, shaData[9];
 int userIndex;
 bool success;
 
@@ -25,7 +25,6 @@ void setup() {
   //while (!Serial);
   db.open(0);                 //init database
   pinMode(triggerPin, INPUT); //set triggerPin to input to not set state high or low
-  Sha1.init();
 
   Serial.println("Looking for PN532...");
   nfc.begin();
@@ -56,29 +55,50 @@ void loop() {
       Serial.print("flags: ");
       hexdump(user.flags, 1);
 
-      // Do the challenge
-      sector = random(0, 16);
-      memcpy(shaData, user.secret, 7);
-      shaData[6] = sector;
-      Sha1.print(shaData[0],7);
+      //sector = random(0, 16);
+      sector = 1;
+      memcpy(shaData, user.secret, 8);
+      shaData[8] = sector;
+      Sha1.init();
+      for (int i = 0; i < 8; i++)
+      {
+        Sha1.print(formatHexString(shaData[i]));
+      }
+      Sha1.print(shaData[8]);
       hash = Sha1.result();
+
       memcpy(keyA, hash, 6);
       success = nfc.mifareclassic_AuthenticateBlock(user.uid, 4, sector*4, 0, keyA);
-      if (success) {
+      
+      if (success)
+      {
         uint8_t data[16];
-        success = nfc.mifareclassic_ReadDataBlock(4, data);
+        success = nfc.mifareclassic_ReadDataBlock(sector*4+1, data);
         if (success)
-          if(!compare(hash + 6, data, 14)) {
+        {
+          if(compare(hash + 6, data, 14))
+          {
+            state = STATE_GRANTED;
+          }
+          else
+          {
             state = STATE_DENIED;
             Serial.println("Wrong hash!");
           }
-        else state = STATE_DENIED;
+        }
+        else
+        {
+          state = STATE_DENIED;
+        }
       }
-      else state = STATE_DENIED;
+      else
+      {
+        state = STATE_DENIED;
+      }
 
       if(!(user.flags&0b10000000)) {state = STATE_CHILD; break;} // Check if the user is a adult
       if(user.flags&0b01000000) {state = STATE_ADMIN; break;} // Check if the user is a admin
-      state = STATE_GRANTED; // The user passed all checks so should be granted access
+      //state = STATE_GRANTED; // The user passed all checks so should be granted access
       break;
     case STATE_GRANTED:
       Serial.println("STATE_GRANTED");
@@ -104,4 +124,14 @@ void loop() {
       state = STATE_VERIFY;
       break;
   }
+}
+
+String formatHexString(int hexInt)
+{
+  String hexString =  String(hexInt, HEX);
+  if (hexInt < 17)
+  {
+    hexString = '0' + hexString;
+  }
+  return hexString;
 }
