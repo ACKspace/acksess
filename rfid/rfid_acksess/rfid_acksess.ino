@@ -5,6 +5,7 @@
 #include <sha1.h>
 #include "DB.h"
 #include "acksess.h"
+#include <avr/wdt.h>
 
 // Don't use pin 13 as it's used by the bootloader and will trigger the door to open on reboot
 #define triggerPin 8
@@ -22,6 +23,8 @@ int userIndex;
 bool success;
 
 void setup() {
+  wdt_enable(WDTO_8S);
+
   Serial.begin(115200);       //init serial
   //while (!Serial);
   db.open(0);                 //init database
@@ -40,6 +43,8 @@ void setup() {
 }
 
 void loop() {
+  wdt_reset();
+
   switch (state) {
     case STATE_VERIFY:
       if (!getKeyCode(nfc, addr)) break; // Check if there is a valid ibutton available and read it
