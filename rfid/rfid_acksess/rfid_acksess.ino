@@ -43,14 +43,14 @@ void loop() {
   switch (state) {
     case STATE_VERIFY:
       if (!getKeyCode(nfc, addr)) break; // Check if there is a valid ibutton available and read it
-      memcpy(user.uid, addr, 6);
+      memcpy(user.uid, addr, 4);
       userIndex = getUser(db, user);
       if(userIndex < 0) {state = STATE_DENIED; break;} // Check if user exists in the database and fetch the secret
 
       Serial.print("addr: ");
       hexdump(addr, 8);
       Serial.print("uid: ");
-      hexdump(user.uid, 6);
+      hexdump(user.uid, 4);
       Serial.print("secret: ");
       hexdump(user.secret, 8);
       Serial.print("flags: ");

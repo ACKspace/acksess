@@ -27,7 +27,7 @@ int getUser(DB db, User &user) {
   User dbUser;
   for(int i = 1; i <= db.nRecs(); i++) {
     db.read(i, DB_REC dbUser);
-    if(compare(dbUser.uid, user.uid, 6)) {
+    if(compare(dbUser.uid, user.uid, 4)) {
       memcpy(user.secret, dbUser.secret, 8);
       user.flags = dbUser.flags;
       return i;
