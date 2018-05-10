@@ -25,6 +25,9 @@ bool success;
 void setup() {
   wdt_enable(WDTO_8S);
 
+  digitalWrite(SDA, LOW);
+  digitalWrite(SCL, LOW);
+
   Serial.begin(115200);       //init serial
   //while (!Serial);
   db.open(0);                 //init database
