@@ -98,7 +98,6 @@ void loop() {
 
       if(!(user.flags&0b10000000)) {state = STATE_CHILD; break;} // Check if the user is a adult
       if(user.flags&0b01000000) {state = STATE_ADMIN; break;} // Check if the user is a admin
-      //state = STATE_GRANTED; // The user passed all checks so should be granted access
       break;
     case STATE_GRANTED:
       Serial.println("STATE_GRANTED");
