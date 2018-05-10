@@ -6,7 +6,8 @@
 #include "DB.h"
 #include "acksess.h"
 
-#define triggerPin 13
+// Don't use pin 13 as it's used by the bootloader and will trigger the door to open on reboot
+#define triggerPin 8
 
 DB db;
 User user;
