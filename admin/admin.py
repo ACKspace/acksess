@@ -33,7 +33,7 @@ def listUser(userId):
   print("Is adult" if flags[0] == '1' else "Is not adult")
   print("Is admin" if flags[1] == '1' else "Is not admin")
 
-with serial.Serial('COM4', 115200) as ser:
+with serial.Serial('COM5', 115200) as ser:
 	admin = False
 	while admin == False:
 		if (ser.read() == 'A'):
