@@ -57,31 +57,38 @@ bool compare( const uint8_t one[], const uint8_t two[], const uint8_t length ) {
 
 void admin(DB db) {
   Serial.print('A');
-  while (!Serial.available());
-  char command = Serial.read();
-  switch (command) {
-    case 'a':
-      Serial.write(db.nRecs());
-      User dbUser;
-      for (int i = 1; i <= db.nRecs(); i++) {
-        db.read(i, DB_REC dbUser);
-        for(int ii = 0; ii < 6; ii++)
-          Serial.write(dbUser.uid[ii]);
-        Serial.write(dbUser.flags);
-      }
-      break;
-    case 'b':
-      Serial.println("Add user");
-      break;
-    case 'c':
-      Serial.println("Remove user");
-      break;
-    case 'd':
-      Serial.println("Set flags");
-      break;
-    case 'e':
-      Serial.println("Clear secret");
-      break;
+  while(true){
+    while (!Serial.available());
+    char command = Serial.read();
+    switch (command) {
+      case 'a':
+        Serial.write(db.nRecs());
+        User dbUser;
+        for (int i = 1; i <= db.nRecs(); i++) {
+          db.read(i, DB_REC dbUser);
+          for(int ii = 0; ii < 6; ii++)
+            Serial.write(dbUser.uid[ii]);
+          Serial.write(dbUser.flags);
+        }
+        break;
+      case 'b':
+        Serial.println("Add user");
+        User newRecord;
+        byte newRecordBuffer[15];
+        Serial.readBytes(newRecordBuffer, 15);
+        memcpy(&newRecord, newRecordBuffer, 15);
+        db.append(DB_REC newRecord);
+        break;
+      case 'c':
+        Serial.println("Remove user");
+        break;
+      case 'd':
+        Serial.println("Set flags");
+        break;
+      case 'e':
+        Serial.println("Clear secret");
+        break;
+    }
   }
 }
 
